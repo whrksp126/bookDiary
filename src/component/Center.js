@@ -10,7 +10,7 @@ const Center = () => {
   const [buttonState, setButtonState] = useState('관심');
   const [bookId, setBookId] = useState('');
   const [itemDelete, setItemDelete] = useState(false);
-  
+  const [searchPage ,setSearchPage] = useState(false);
 
 
   return (
@@ -35,7 +35,10 @@ const Center = () => {
             <button 
               style={{width: '100%', fontWeight: 'bold'}} 
               className="btn btn-outline-dark mb-1 p-3" 
-              onClick={()=>{setButtonState('관심')}}
+              onClick={()=>{
+                setButtonState('관심')
+                setSearchPage(false)
+              }}
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -52,7 +55,10 @@ const Center = () => {
             <button
               style={{width: '100%', fontWeight: 'bold'}} 
               className="btn btn-outline-dark my-2 p-3" 
-              onClick={()=>{setButtonState('읽는중')}}
+              onClick={()=>{
+                setButtonState('읽는중')
+                setSearchPage(false)
+              }}
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -71,7 +77,10 @@ const Center = () => {
             <button
               style={{width: '100%', fontWeight: 'bold'}} 
               className="btn btn-outline-dark my-2 p-3" 
-              onClick={()=>{setButtonState('완독')}}
+              onClick={()=>{
+                setButtonState('완독')
+                setSearchPage(false)
+              }}
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -99,6 +108,7 @@ const Center = () => {
                   setUpDataOrList(false),
                   setBookId(''),
                   setItemDelete(false)
+                  setSearchPage(false)
                 }}
               >
               <svg 
@@ -115,7 +125,7 @@ const Center = () => {
                 <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z" />
               </svg>
 
-                도 서 추 가</button>
+                도 서 추 가 🙏</button>
               :
               <button 
                 className="btn btn-dark my-2 p-3" 
@@ -123,6 +133,7 @@ const Center = () => {
                 onClick={()=>{
                 setUpDataOrList(true),
                 setItemDelete(false)
+                setSearchPage(false)
                 }}
               >
               <svg 
@@ -138,15 +149,38 @@ const Center = () => {
 
                 도 서 목 록</button>
             }
+            {/* {searchPage === false &&
+              <>
+            <button
+              style={{width: '100%', fontWeight: 'bold'}} 
+              className="btn btn-dark my-2 p-3" 
+              onClick={()=>{
+                setSearchPage(!searchPage);
+              }}
+            >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width={30} 
+              height={30} 
+              style={{marginRight:' 5%'}} 
+              fill="currentColor" 
+              className="bi bi-search" 
+              viewBox="0 0 16 16"
+            ><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+            </svg>
+              도 서 검 색
+            </button>  
+              </>
+            } */}
+            
           </div>
           </div>
         </div>
 
-
         {/* 왼 쪽 */}
         <div className="col-lg-8 px-1 pt-1">
-
-        {itemDelete === false 
+        <>
+          {itemDelete === false 
         ? 
         <div>
           {upDataOrList 
@@ -175,6 +209,10 @@ const Center = () => {
           />
         </>
         }
+          </>  
+        
+
+        
           <div className="col-lg-5" style={{display:'flex',alignItems:'center'}}>
 
           </div>

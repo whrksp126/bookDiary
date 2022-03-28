@@ -5,6 +5,12 @@ import Loadingbar from './Loadingbar';
 
 import { Editor } from '@tinymce/tinymce-react'; 
 import Router from 'next/router';
+import Search from './search';
+
+//여기서 부터 검색
+import { bookSearch } from './api';
+
+// 여기까지 검색
 
 const UpDataBook = ({ bookId, buttonState, setUpDataOrList}) => {
   
@@ -56,8 +62,10 @@ const UpDataBook = ({ bookId, buttonState, setUpDataOrList}) => {
   const onSubmit = () => {
     if(bookId !== ''){
       createBookData();
+      alert('createBookData가 실행됨')
     }else{
       saveBookData();
+      alert('saveBookData가 실행됨')
     }
   }
 
@@ -118,6 +126,7 @@ const UpDataBook = ({ bookId, buttonState, setUpDataOrList}) => {
       },
     }
     ,setUpDataOrList(true)
+    // ,Router.push('/')
     ).catch((error)=>{alert(error.message)})
   }
 
@@ -156,7 +165,7 @@ const UpDataBook = ({ bookId, buttonState, setUpDataOrList}) => {
       setMayEndBook(idBookData?.mayEndBook)
       setEndBook(idBookData?.endBook)
       setLoading(false);
-
+      setIsAleardyBook(false);
     }else{
       console.log('그런 문서가 없습니다!')
     }
@@ -168,18 +177,125 @@ const UpDataBook = ({ bookId, buttonState, setUpDataOrList}) => {
   },[bookId])
 
 
+  //여기서 부터 검색 부분
+  const [searchText, setSearchText] = useState('');
+  const [searchBookData, setSearchBookData] = useState(null);
+  const [isAleardyBook, setIsAleardyBook] = useState(true);
+
+  const onSearchButton = (e) => {
+    e.preventDefault();
+    if(searchBookData !== ''){
+      console.log('실행됨')
+      console.log(searchBookData)
+      bookSearchHandler();
+    }
+  }
+  const bookSearchHandler = async () => {
+    const params = {
+      query: searchText,
+    }
+    const {data} = await bookSearch(params)
+    .catch((error)=>{
+      console.log(error.message)
+    });
+    setSearchBookData(data.documents);
+  }
+
+  // 도서 검색에 값이 없으면 이전 검색 데이터를 지워 줌
+  useEffect(()=>{
+    if(searchText === ''){
+      setSearchBookData(null)
+    }
+  },[searchText])
+
+  const getBookData = (book) => {
+    setTitle(book.title)
+    setWriter(book.authors)
+    setFileImage(book.thumbnail)
+    setBookLink(book.url)
+  }
+
+
+  // 여기까지 검색부분
+
   return (
     <>
+    {/* 여기부터 검색 */}
+      {/* <Search /> */}
+      <>{
+        isAleardyBook &&
+        
+      
+      <div style={{margin :"0px 8px"}}>
+      <form className="row" onSubmit={onSearchButton}>
+        <div className="col-12" style={{marginBottom:'10px'}}>
+          <input 
+            value={searchText} 
+            onChange={(e)=>{
+              setSearchText(e.target.value)
+            }}
+            required 
+            type="text" 
+            className="form-control" 
+            placeholder="도서 제목을 입력해 주세요..."
+          />
+        </div>
+      </form>    
+      <div>
+        <div className="row"> 
+        {searchText !== ''  && searchBookData?.map((book)=>
+            <div key={book.isbn} className="col-xl-6">
+              <div className="card text-dark bg-light mb-3" style={{maxWidth: '540px'}}>
+                <div className="row g-0">
+                  <div className="col-md-4 col-4" style={{margin:'1px auto 1px'}} >
+                   {/* 책 커버 이미지 필수 */}
+                    <img src={book.thumbnail} className="img-fluid rounded-start " alt="..." />
+                  </div>
+                  <div className="col-md-8">
+                    <div className="mx-2 my-2">
+                      {/* 책 제목 필수 */}
+                      <h5 className="card-title text-truncate">{book.title}</h5>
+                      <div style={{display: 'flex', justifyContent:"space-between"}}>
+                      {/* 책 작가 필수 */}
+                      <h6 className="card-subtitle mb-1 text-muted text-truncate">{book.authors[0]}</h6>
+                    </div>
+                    {/* 구매하기 버튼 관심 */}
+                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                      <a target='_blank' href={book.url} rel='noreferrer'>
+                        <button type="button" className="btn btn-outline-dark btn-sm">
+                          구매 하기 💸
+                         </button>
+                      </a>
+                      <a href="#addBookData">
+                      <button type="button" 
+                        className="btn btn-outline-dark btn-sm" 
+                        onClick={()=>{getBookData(book)}}>
+                        도서 정보 받아오기 🔖
+                      </button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    )}
+    </div>
+    </div>
+    </div>
+    }</>
+    {/* 여기까지 검색 부분 */}
+    
       {loading ? (<div><Loadingbar/></div>) : (<div>
 
-      <div className="col-12" >
+      <div id="addBookData" className="col-12" >
         <div className="card text-dark bg-light mb-3" style={{maxWidth:'1200px'}}>
           <div className="row g-0 d-md-flex justify-content-md-end">
 
             {fileImage && (
             <div className="col-md-4" style={{margin:'1px auto 1px', width:'30%', paddingTop:'10px'}} >
             {/* 책 커버 이미지 필수 */}
-              <img src={fileImage} className="img-fluid rounded-start " alt="..." />
+              <img src={fileImage} className="img-fluid rounded-start" style={{width: '100%'}} alt="표지 이미지" />
             </div>
             )}
 
@@ -358,8 +474,8 @@ const UpDataBook = ({ bookId, buttonState, setUpDataOrList}) => {
                   {eventValue !== "관심" &&<button className="btn btn-outline-dark" onClick={log}>저 장 📌</button>}
                 </div>
               </div>
+                  {eventValue === '관심' &&<button className="btn btn-outline-dark">저 장 📌</button>}
             </form> 
-                  {eventValue === '관심' &&<button className="btn btn-outline-dark" onClick={saveBookData}>저 장 📌</button>}
             {/* {bookId !== '' 
             ? 
             <button className="btn btn-outline-dark mt-4" type="submit">수 정</button>
