@@ -5,7 +5,6 @@ import Loadingbar from './Loadingbar';
 
 import { Editor } from '@tinymce/tinymce-react'; 
 import Router from 'next/router';
-import Search from './search';
 
 //여기서 부터 검색
 import { bookSearch } from './api';
